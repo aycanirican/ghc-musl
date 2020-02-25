@@ -1,8 +1,8 @@
 let
 
 flavours = [
-  { compiler="ghc881"; integer-simple=false; }
-  { compiler="ghc881"; integer-simple=true;  }
+  { compiler="ghc882"; integer-simple=false; }
+  { compiler="ghc882"; integer-simple=true;  }
   { compiler="ghc865"; integer-simple=false; }
   { compiler="ghc865"; integer-simple=true;  }
   { compiler="ghc844"; integer-simple=false; }
