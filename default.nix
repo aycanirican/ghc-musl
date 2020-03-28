@@ -12,7 +12,7 @@ let
 user = "utdemir";
 name = "ghc-musl";
 tag = lib.concatStringsSep "-" [
-  "v4"
+  "v5"
   (if integer-simple then "integer-simple" else "libgmp")
   compiler
 ];
@@ -33,27 +33,22 @@ libraries = with pkgsMusl; [
   musl
   zlib zlib.static
   libffi (libffi.override { stdenv = makeStaticLibraries stdenv; })
+  ncurses (ncurses.override { enableStatic = true; })
 ] ++ lib.optionals (!integer-simple) [ gmp (gmp.override { withStatic = true; }) ];
 
 packages = with pkgsMusl; [
   bash coreutils gnused gnugrep gawk
   binutils binutils-unwrapped
   gcc pkgconfig automake autoconf
-  shadow cacert
+  shadow cacert iana_etc
 ] ++ [
   haskellPackages.ghc
   (haskell.lib.justStaticExecutables haskellPackages.cabal-install)
 ];
 
-layered = pkgsOrig.dockerTools.buildLayeredImage {
-  name = "${name}-layers";
-  inherit tag;
-  contents = packages ++ libraries;
-};
-
 image = pkgsOrig.dockerTools.buildImage {
   inherit name tag;
-  fromImage = layered;
+  contents = packages ++ libraries;
   runAsRoot = ''
     #!${pkgsMusl.stdenv.shell}
     ${pkgsMusl.dockerTools.shadowSetup}
