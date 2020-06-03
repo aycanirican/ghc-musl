@@ -20,7 +20,7 @@ pkgsOrig =
 user = "utdemir";
 name = "ghc-musl";
 tag = lib.concatStringsSep "-" [
-  "v6"
+  "v7"
   (if integer-simple then "integer-simple" else "libgmp")
   compiler
 ];
