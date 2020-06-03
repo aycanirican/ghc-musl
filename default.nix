@@ -1,13 +1,21 @@
-let
-sources = import ./nix/sources.nix;
-in
-
-{ pkgsOrig ? import sources.nixpkgs { config.allowBroken = true; }
-, compiler
+{ compiler
 , integer-simple
 }:
 
 let
+sources = import ./nix/sources.nix;
+pkgsOrig =
+  let
+    basePkgs = import sources.nixpkgs {};
+    patched = basePkgs.applyPatches {
+      name = "nixpkgs-patched";
+      src = sources.nixpkgs;
+      patches = [
+        ./patches/0001-Revert-ghc-8.6.3-binary-8.6.5-binary.patch
+      ];
+    };
+  in
+    import patched { config.allowBroken = true; };
 
 user = "utdemir";
 name = "ghc-musl";
@@ -17,7 +25,10 @@ tag = lib.concatStringsSep "-" [
   compiler
 ];
 
-pkgsMusl = pkgsOrig.pkgsMusl;
+pkgsMusl = pkgsOrig.pkgsMusl.extend (se: su: {
+  fetchgit = pkgsOrig.fetchgit;
+});
+
 haskell = pkgsMusl.haskell;
 lib = pkgsMusl.stdenv.lib;
 
