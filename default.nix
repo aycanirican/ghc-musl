@@ -106,7 +106,7 @@ in
     #   tarball:${image} \
     #   docker://${user}/${name}:${tag}
 
-    cat ${image} | docker load
+    docker load -i ${image}
     docker tag "${name}:${tag}" "${user}/${name}:${tag}"
     docker push "${user}/${name}:${tag}"
   '';
